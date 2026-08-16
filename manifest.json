@@ -1,0 +1,71 @@
+{
+  "manifest_version": 3,
+  "name": "ReelGuard & Focus Blocker",
+  "version": "1.2.0",
+  "description": "Tracks reels, blocks distraction sites, and rewards active PW lecture study time.",
+  "permissions": [
+    "storage",
+    "declarativeNetRequest",
+    "tabs"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "game_block_rules",
+        "enabled": true,
+        "path": "rules.json"
+      }
+    ]
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.instagram.com/*",
+        "*://*.youtube.com/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_end"
+    },
+    {
+      "matches": [
+        "*://*.pw.live/*"
+      ],
+      "js": ["pw_tracker.js"],
+      "run_at": "document_end"
+    },
+    {
+      "matches": [
+        "*://*.crazygames.com/*",
+        "*://*.poki.com/*",
+        "*://*.coolmathgames.com/*",
+        "*://*.roblox.com/*",
+        "*://zone.msn.com/*",
+        "*://*.msn.com/*/play*",
+        "*://*.y8.com/*",
+        "*://*.now.gg/*",
+        "*://*.armorgames.com/*",
+        "*://*.kongregate.com/*",
+        "*://*.krunker.io/*",
+        "*://*.1001games.com/*"
+      ],
+      "js": ["blocker.js"],
+      "run_at": "document_start"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "ReelGuard"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["blocked.html"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

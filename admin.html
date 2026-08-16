@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FocusGuard Controller</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background: #0f172a;
+      color: #f8fafc;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      padding: 16px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 20px;
+      padding: 20px;
+      width: 100%;
+      max-width: 420px;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    }
+    h2 {
+      font-size: 22px;
+      color: #38bdf8;
+      margin-bottom: 14px;
+    }
+    
+    /* XP Stat Card */
+    .xp-box {
+      background: #0f172a;
+      border: 1px solid #eab308;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 14px;
+    }
+    .xp-val {
+      font-size: 26px;
+      font-weight: 800;
+      color: #facc15;
+    }
+    .xp-label {
+      font-size: 12px;
+      color: #94a3b8;
+      margin-top: 2px;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .stat-box {
+      background: #0f172a;
+      border-radius: 12px;
+      padding: 12px;
+    }
+    .stat-val {
+      font-size: 26px;
+      font-weight: 800;
+      color: #ffffff;
+    }
+    .stat-label {
+      font-size: 11px;
+      color: #94a3b8;
+      margin-top: 4px;
+    }
+    
+    .request-alert {
+      background: #f59e0b;
+      color: #000000;
+      font-weight: 700;
+      padding: 10px;
+      border-radius: 10px;
+      margin-bottom: 14px;
+      display: none;
+      animation: pulse 1.5s infinite;
+    }
+    .section-title {
+      font-size: 13px;
+      color: #94a3b8;
+      font-weight: 700;
+      margin: 14px 0 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      text-align: left;
+    }
+    .btn-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    button {
+      padding: 12px 8px;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.1s, opacity 0.2s;
+    }
+    button:active {
+      transform: scale(0.96);
+    }
+    .btn-grant { background: #10b981; color: white; }
+    .btn-game { background: #a855f7; color: white; }
+    .btn-admin { background: #eab308; color: #000000; grid-column: span 2; }
+    .btn-lock { background: #ef4444; color: white; grid-column: span 2; }
+    
+    .status-box {
+      margin-top: 14px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      background: #0f172a;
+      color: #94a3b8;
+      word-break: break-all;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>🛡️ FocusGuard Remote</h2>
+
+    <div id="requestAlert" class="request-alert">⚠️ Permission Requested for Access!</div>
+
+    <!-- Live Study XP -->
+    <div class="xp-box">
+      <div class="xp-val" id="xpDisplay">0 XP</div>
+      <div class="xp-label">⚡ Physics Wallah Study Time Earned</div>
+    </div>
+
+    <!-- Live Quotas -->
+    <div class="stats-grid">
+      <div class="stat-box">
+        <div class="stat-val" id="allowedDisplay">--</div>
+        <div class="stat-label">🎬 Reel Quota</div>
+      </div>
+      <div class="stat-box" style="border: 1px solid #a855f7;">
+        <div class="stat-val" id="gamingDisplay" style="color: #c084fc;">--</div>
+        <div class="stat-label">🎮 Game Time</div>
+      </div>
+    </div>
+
+    <!-- Manual Reel Controls -->
+    <div class="section-title">🎬 Grant Reels</div>
+    <div class="btn-grid">
+      <button class="btn-grant" onclick="grantReels(10)">+10 Reels</button>
+      <button class="btn-grant" onclick="grantReels(20)">+20 Reels</button>
+    </div>
+
+    <!-- Manual Game Controls -->
+    <div class="section-title">🎮 Grant Game Time</div>
+    <div class="btn-grid">
+      <button class="btn-game" onclick="grantGameTime(15)">+15 Mins</button>
+      <button class="btn-game" onclick="grantGameTime(30)">+30 Mins</button>
+    </div>
+
+    <!-- Admin & Lockdown Controls -->
+    <div class="section-title">⚙️ Admin Controls</div>
+    <div class="btn-grid">
+      <button class="btn-admin" onclick="unlockAdminAccess(5)">
+        🔓 Unlock Extensions Page (5 Mins)
+      </button>
+      <button class="btn-lock" onclick="lockDeviceNow()">
+        🔒 Lock All & Reset Daily Stats
+      </button>
+    </div>
+
+    <div id="statusLog" class="status-box">Status: Initializing...</div>
+  </div>
+
+  <script>
+    const FIREBASE_URL = "https://focus-guard-f8753-default-rtdb.firebaseio.com/permissions.json";
+    
+    let currentAllowed = 0;
+    let currentGameUnlockUntil = 0;
+    let currentAdminUnlockUntil = 0;
+    const statusLog = document.getElementById("statusLog");
+
+    function log(msg, isError = false) {
+      statusLog.innerHTML = msg;
+      statusLog.style.color = isError ? "#f87171" : "#38bdf8";
+    }
+
+    async function syncData() {
+      try {
+        const res = await fetch(FIREBASE_URL + "?ts=" + Date.now(), { cache: "no-store" });
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}: Check database rules`);
+        }
+
+        const data = await res.json() || { 
+          allowed: 0, 
+          gameUnlockUntil: 0, 
+          requested: false, 
+          studyXP: 0, 
+          adminUnlockUntil: 0 
+        };
+        
+        currentAllowed = Number(data.allowed) || 0;
+        currentGameUnlockUntil = Number(data.gameUnlockUntil) || 0;
+        currentAdminUnlockUntil = Number(data.adminUnlockUntil) || 0;
+        const currentXP = Number(data.studyXP) || 0;
+        
+        // Update Displays
+        document.getElementById("allowedDisplay").innerText = currentAllowed;
+        document.getElementById("xpDisplay").innerText = currentXP + " XP";
+        
+        const now = Date.now();
+        if (currentGameUnlockUntil > now) {
+          const minsLeft = Math.ceil((currentGameUnlockUntil - now) / 60000);
+          document.getElementById("gamingDisplay").innerText = minsLeft + "m";
+        } else {
+          document.getElementById("gamingDisplay").innerText = "Locked";
+        }
+
+        // Show/hide request alert
+        document.getElementById("requestAlert").style.display = data.requested ? "block" : "none";
+
+        // Admin status log
+        if (currentAdminUnlockUntil > now) {
+          const adminMins = Math.ceil((currentAdminUnlockUntil - now) / 60000);
+          log(`🔓 Extensions unlocked for editing (${adminMins}m remaining)`);
+        }
+      } catch (err) {
+        log(`Sync Error: ${err.message}`, true);
+      }
+    }
+
+    async function grantReels(amount) {
+      await updateDatabase({ allowed: currentAllowed + amount, requested: false });
+      log(`✅ Added ${amount} Reels (Total: ${currentAllowed + amount})`);
+    }
+
+    async function grantGameTime(minutes) {
+      const now = Date.now();
+      const baseTime = currentGameUnlockUntil > now ? currentGameUnlockUntil : now;
+      const newUnlockTime = baseTime + (minutes * 60 * 1000);
+      
+      await updateDatabase({ gameUnlockUntil: newUnlockTime, requested: false });
+      log(`✅ Unlocked games for ${minutes} minutes`);
+    }
+
+    async function unlockAdminAccess(minutes) {
+      const unlockTime = Date.now() + (minutes * 60 * 1000);
+      await updateDatabase({ adminUnlockUntil: unlockTime });
+      log(`🔓 Admin access granted for ${minutes} minutes! You can now open chrome://extensions.`);
+    }
+
+    async function lockDeviceNow() {
+      if (confirm("Lock everything and reset quota to 0?")) {
+        await updateDatabase({ 
+          allowed: 0, 
+          gameUnlockUntil: 0, 
+          requested: false, 
+          studyXP: 0, 
+          adminUnlockUntil: 0 
+        });
+        log(`🔒 All limits locked and XP reset.`);
+      }
+    }
+
+    async function updateDatabase(payload) {
+      try {
+        await fetch(FIREBASE_URL, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...payload, lastUpdated: Date.now() })
+        });
+        syncData();
+      } catch (err) {
+        log(`Write Error: ${err.message}`, true);
+      }
+    }
+
+    // Initial sync and poll every 2 seconds
+    syncData();
+    setInterval(syncData, 2000);
+  </script>
+</body>
+</html>

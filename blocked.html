@@ -1,0 +1,37 @@
+<script>
+    const FIREBASE_URL = "https://focus-guard-f8753-default-rtdb.firebaseio.com/permissions.json";
+
+    async function requestPermission() {
+      const btn = document.getElementById("requestBtn");
+      btn.disabled = true;
+      btn.innerText = "Sending Request...";
+
+      try {
+        // Send request
+        await fetch(FIREBASE_URL, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ requested: true, requestedAt: Date.now() })
+        });
+        
+        document.getElementById("statusMsg").style.display = "block";
+        btn.innerText = "Request Pending";
+
+        // Listen for approval without getting stuck in browser cache
+        const interval = setInterval(async () => {
+          const res = await fetch(FIREBASE_URL + "?ts=" + Date.now(), { cache: "no-store" });
+          const data = await res.json();
+          
+          if (data && data.requested === false) {
+            clearInterval(interval);
+            // Permission granted! Redirect back to reels
+            window.location.replace("https://www.instagram.com/reels/");
+          }
+        }, 2000);
+
+      } catch (err) {
+        btn.innerText = "Failed. Try Again";
+        btn.disabled = false;
+      }
+    }
+  </script>
