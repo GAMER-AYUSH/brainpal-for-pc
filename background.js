@@ -1,4 +1,4 @@
-const FIREBASE_URL = "https://focus-guard-f8753-default-rtdb.firebaseio.com/permissions.json";
+const FIREBASE_URL = "https://YOUR-FIREBASE-PROJECT-ID.firebaseio.com/permissions.json"; // WARNING: Add your own Firebase URL here!
 
 let isDnrRulesDisabled = false;
 let allowExtensionManagementUntil = 0;
