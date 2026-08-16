@@ -31,3 +31,45 @@ This project uses Firebase Realtime Database (100% Free) to sync commands betwee
        ".write": true
      }
    }
+
+1. Copy your Database URL. It will look like https://your-project-id.firebaseio.com/.
+
+2. Configure the Code
+Clone or download this repository.
+
+Open admin.html, background.js, content.js, and pw_tracker.js.
+
+Locate the FIREBASE_URL variable at the top of each file.
+
+Replace it with your database URL, ensuring it ends with /permissions.json.
+(Example: https://your-project-id.firebaseio.com/permissions.json)
+
+3. Install the Extension (PC)
+Open your Chromium-based browser (Chrome, Edge, Brave).
+
+Navigate to chrome://extensions.
+
+Enable Developer mode in the top right corner.
+
+Click Load unpacked and select the folder containing this code.
+
+4. Install the Dashboard (Phone)
+Send the admin.html file to your phone, or host it for free on GitHub Pages, Vercel, or Netlify. Open the link on your phone and bookmark it to your home screen.
+
+🛠️ Making it Tamper-Proof (Optional but Recommended)
+By default, the extension defends itself by redirecting away from the extensions page. However, a user can still right-click the extension puzzle piece and click "Remove".
+
+To make the extension virtually invincible on Windows:
+
+Press Win + R, paste %localappdata%\Google\Chrome\User Data\Default, and hit Enter. (Adjust path for Edge/Brave if necessary).
+
+Find the files named Preferences and Secure Preferences.
+
+Right-click each -> Properties -> Check Read-only -> Apply.
+
+Now, even if the user clicks "Remove from Chrome", the extension will instantly resurrect itself the next time the browser is opened.
+
+(To update the extension later, you must uncheck Read-only, tap "Unlock Extensions" on your mobile dashboard, make your updates, and re-lock the files).
+
+📜 License
+This project is open-source and free to modify for personal productivity and focus.
